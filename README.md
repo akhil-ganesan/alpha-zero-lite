@@ -1,4 +1,4 @@
-# mu-ttt
+# Alpha Zero (for Tic Tac Toe)
 
 ResNet: https://d2l.ai/chapter_convolutional-modern/resnet.html
 ResNet Paper: https://arxiv.org/pdf/1512.03385
