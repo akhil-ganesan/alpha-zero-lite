@@ -11,3 +11,4 @@ MZ Paper: https://arxiv.org/pdf/1911.08265
 AZ Paper: https://arxiv.org/pdf/1712.01815
 
 Dirichlet Noise Post: https://stats.stackexchange.com/questions/322831/purpose-of-dirichlet-noise-in-the-alphazero-paper
+Dirichlet Noise in Small Games: https://medium.com/oracledevs/lessons-from-alphazero-part-3-parameter-tweaking-4dceb78ed1e5
