@@ -1,0 +1,15 @@
+C:\Users\Akhil\anaconda3\envs\CS-3600\python.exe C:\Users\Akhil\Downloads\GitHub\CS-3600\RLA\az_cross_testing.py
+Cross-Evaluation Results
+Gen 0: 0.0 	 [0, 0.0, 0.0, 0.0, 0.0]
+Gen 1: 0.0 	 [0.0, 0, 0.0, 0.0, 0.0]
+Gen 2: 0.0 	 [0.0, 0.0, 0, 0.0, 0.0]
+Gen 3: 0.0 	 [0.0, 0.0, 0.0, 0, 0.0]
+Gen 4: 0.0 	 [0.0, 0.0, 0.0, 0.0, 0]
+Baseline Agent Results
+Gen 0: (16, 17, -3, 2)
+Gen 1: (6, 16, -4, -6)
+Gen 2: (11, 15, 0, -4)
+Gen 3: (14, 17, -1, -2)
+Gen 4: (0, 14, -8, -6)
+
+Process finished with exit code 0

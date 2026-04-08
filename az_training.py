@@ -1,77 +1,57 @@
 import torch
 import torch.nn.functional as F
 
-from RLA.agent import simulate_games, RandomAgent, MiniMaxAgent, MCTSAgent
-from RLA.env import RLEnv
-from RLA.az_agent import AZAgent, PolicyValueNetwork, Config
+from agent import simulate_games, RandomAgent, MiniMaxAgent, MCTSAgent
+from az_agent import AZAgent
+from env import RLEnv
+from az_agent import PolicyValueNetwork, Config
 
-EPOCHS = 800 # Each epoch is a game; this can be batched (with randomness in MCTS)
+EPOCHS = 4000
 
-# Can ideally parallelize playing games (populating the buffer)
-# & model training (learning from the replay data)
-
-def play_game(network, temp=1, rounds=20):
-    rl = RLEnv(AZAgent(network, rounds), AZAgent(network, rounds))
-    states, w, actions = rl.az_play(temp)
-    # print(actions)
+def play_game(network, temp=1.0, simulations=100):
+    rl = RLEnv(AZAgent(network, simulations), AZAgent(network, simulations))
+    states, w, actions = rl.supervised_az_play(temp)
     return states.float(), torch.tensor([w * (-1 if i % 2 else 1) for i in range(len(actions))]).float(), actions
-    # return states.float(), torch.full(size=(len(actions),), fill_value=w).float(), actions
-
-
 
 if __name__ == "__main__":
     config = Config()
     pvnet = PolicyValueNetwork(config)
-    checkpoint = torch.load(f'pvnet_200.tar')
-    pvnet.load_state_dict(checkpoint['model_state_dict'])
-    optimizer = torch.optim.AdamW(pvnet.parameters(), lr=1e-3) # 3e-4)
+    # checkpoint = torch.load(f'pvnet_v2_1000.tar')
+    # pvnet.load_state_dict(checkpoint['model_state_dict'])
+    optimizer = torch.optim.AdamW(pvnet.parameters(), lr=1e-3) # 3e-4
 
-    device = "cpu"
     losses = []
     pvnet.train()
 
-    for i in range(1, EPOCHS + 1):
-        # pvnet.eval()
+    for i in range(EPOCHS + 1):
         with torch.no_grad():
-            states, w, actions = play_game(pvnet, rounds=100)
+            # Linearly-decaying temperature from 1 to 0.25
+            temp = ((EPOCHS - i*0.75)/EPOCHS)
+            states, w, actions = play_game(pvnet, temp=temp)
 
         optimizer.zero_grad()
-        states = states.to(device)
-        w = w.to(device)
-        actions = actions.to(device)
-
-        # print(states[0])
-
-        policy, values = pvnet(states) # pvnet(states[0].reshape(1, 2, 3, 3))
-        # print(values)
-        # print(actions)
-        # print(policy)
-        # print(values)
-        # print(w)
+        policy, values = pvnet(states)
         loss = F.cross_entropy(policy, actions) + F.mse_loss(values.reshape(-1), w)
-        # F.mse_loss(values.reshape(-1), w[0].reshape(-1))
-        # print(w[0])
-        # print(loss)
         losses.append(loss.item())
         loss.backward()
         optimizer.step()
 
-        if i % 10 == 0:
+        if i % 100 == 0:
             print(i)
 
-        if i % 200 == 0:
+        if i % 1000 == 0:
             mean_loss = sum(losses) / len(losses)
             print(f"Loss: {mean_loss}")
             with torch.no_grad():
-                simulate_games(AZAgent(pvnet, rounds=100), RandomAgent(), 10)
-                simulate_games(AZAgent(pvnet, rounds=100), MiniMaxAgent(), 3)
-                simulate_games(AZAgent(pvnet, rounds=100), MCTSAgent(rounds=100, rollouts=1), 10)
+                simulate_games(AZAgent(pvnet), RandomAgent(), 10)
+                simulate_games(AZAgent(pvnet), MiniMaxAgent(), 3)
+                simulate_games(AZAgent(pvnet), MCTSAgent(), 10)
 
             torch.save({
                 'epoch': i,
                 'model_state_dict': pvnet.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': mean_loss,
-            }, f'pvnet_{i + 200}.tar')
+            }, f'pvnet_{i}.tar')
             losses = []
 

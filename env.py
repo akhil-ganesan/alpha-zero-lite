@@ -80,50 +80,13 @@ class RLEnv:
             player = self.agents[t % 2]
             if player:
                 end, w = self.game.step(player.get_action(self.game, t % 2))
-            # print()
-            # self.game.print_board()
-            # print()
 
         # print("X Win" if w == 1 else ("O Win" if w == -1 else "Draw"))
         # self.game.print_board()
         return w
 
-    def alpha_zero_play(self):
-        end, t, w = False, -1, None
-        states = []
-        actions = []
-        while not end:
-            t += 1
-            states.append(self.game.get_state())
-            player = self.agents[t % 2]
-            action = player.get_action(self.game, t % 2)
-            actions.append(action)
-            end, w = self.game.step(action)
 
-        # print("X Win" if w == 1 else ("O Win" if w == -1 else "Draw"))
-        # self.game.print_board()
-
-        return torch.cat(states, dim=0), w, torch.tensor(actions)
-
-    def az_play(self, temp=1):
-        end, t, w = False, -1, None
-        states = []
-        actions = []
-        while not end:
-            t += 1
-            states.append(self.game.get_perspective_state())
-            player = self.agents[t % 2]
-            action, pi = player.get_action_enhanced(self.game, t % 2, temp=temp)
-            actions.append(pi)
-            # print(action)
-            end, w = self.game.step(action)
-
-        # print("X Win" if w == 1 else ("O Win" if w == -1 else "Draw"))
-        # self.game.print_board()
-
-        return torch.cat(states, dim=0), w, torch.stack(actions)
-
-    def cleaned_play(self, temp=1, az=(True, True)):
+    def supervised_az_play(self, temp=1, az=(True, True)):
         end, t, w = False, -1, None
         states = []
         actions = []

@@ -1,0 +1,64 @@
+C:\Users\Akhil\anaconda3\envs\CS-3600\python.exe C:\Users\Akhil\Downloads\GitHub\CS-3600\RLA\az_training.py
+0
+Loss: 3.2064340114593506
+Agent 1 Wins/Losses/Ties: 10/0/0 (10 total games)
+Agent 1 Wins/Losses/Ties: 0/0/3 (3 total games)
+Agent 1 Wins/Losses/Ties: 4/0/6 (10 total games)
+100
+200
+300
+400
+500
+600
+700
+800
+900
+1000
+Loss: 2.4196502121686936
+Agent 1 Wins/Losses/Ties: 9/1/0 (10 total games)
+Agent 1 Wins/Losses/Ties: 0/0/3 (3 total games)
+Agent 1 Wins/Losses/Ties: 0/5/5 (10 total games)
+1100
+1200
+1300
+1400
+1500
+1600
+1700
+1800
+1900
+2000
+Loss: 1.9378977205753327
+Agent 1 Wins/Losses/Ties: 10/0/0 (10 total games)
+Agent 1 Wins/Losses/Ties: 0/0/3 (3 total games)
+Agent 1 Wins/Losses/Ties: 0/0/10 (10 total games)
+2100
+2200
+2300
+2400
+2500
+2600
+2700
+2800
+2900
+3000
+Loss: 1.7234499416351319
+Agent 1 Wins/Losses/Ties: 10/0/0 (10 total games)
+Agent 1 Wins/Losses/Ties: 0/0/3 (3 total games)
+Agent 1 Wins/Losses/Ties: 4/0/6 (10 total games)
+3100
+3200
+3300
+3400
+3500
+3600
+3700
+3800
+3900
+4000
+Loss: 1.7052446540594102
+Agent 1 Wins/Losses/Ties: 10/0/0 (10 total games)
+Agent 1 Wins/Losses/Ties: 0/0/3 (3 total games)
+Agent 1 Wins/Losses/Ties: 1/0/9 (10 total games)
+
+Process finished with exit code 0

@@ -3,7 +3,7 @@ import math
 import random
 from abc import ABC, abstractmethod
 
-from RLA.env import TicTacToe, RLEnv
+from env import RLEnv
 
 
 class Agent(ABC):
@@ -107,7 +107,6 @@ class MiniMaxAgent(Agent):
 
 class MCTSAgent(Agent):
 
-
     class Node:
         def __init__(self, game, value=None, rollouts=1, action=None):
             self.game = game
@@ -166,10 +165,7 @@ class MCTSAgent(Agent):
         def dfs(node: MCTSAgent.Node):
             u = n = 0
             if not node.q and not node.end:
-                # UCB Minimax Selection
-                if not node.adj:
-                    node.game.print_board()
-                    print(node.n, node.u, node.end, node.adj)
+                # UCB Heuristic Minimax Selection
                 u, n = dfs(max(node.adj, key=lambda c: c.UCB_h(node.n)))
             elif node.q:
                 u, n = node.expand()
@@ -181,26 +177,10 @@ class MCTSAgent(Agent):
         for _ in range(self.rounds-1):
             dfs(root)
 
-        # for c in root.adj:
-        #     print(c.action)
-        #     c.game.print_board()
-        #     print(c.u, c.n)
-        #     print(c.selection_h())
-        #     print(c.UCB_h(root.n))
-        #     print()
-
         return max(root.adj, key=lambda c: c.selection_h()).action
 
-        # print(root.u)
-        # print(root.n)
-        # print("Expanding")
-        # u, n = root.expand()
-        # print(u)
-        # print(n)
-        # root.adj[0].game.print_board()
 
-
-def simulate_games(agent1, agent2, games):
+def simulate_games(agent1, agent2, games, output=True):
     wins, losses, ties = 0, 0, 0
     for _ in range(games):
         rl = RLEnv(agent1, agent2)
@@ -212,35 +192,36 @@ def simulate_games(agent1, agent2, games):
         else:
             ties += 1
 
-    print(f"Agent 1 Wins/Losses/Ties: {wins}/{losses}/{ties} ({games} total games)")
+    if output:
+        print(f"Agent 1 Wins/Losses/Ties: {wins}/{losses}/{ties} ({games} total games)")
     return wins, losses, ties
 
 
+# Debugging an array of games
 if __name__ == "__main__":
     simulate_games(MCTSAgent(rounds=300, rollouts=1), MCTSAgent(rounds=300, rollouts=1), 10)
 
-    # print("Random")
-    # simulate_games(MCTSAgent(), RandomAgent(), 20)
-    #
-    # print("20")
-    # simulate_games(MCTSAgent(rounds=20, rollouts=1), MiniMaxAgent(), 20)
-    # simulate_games(MCTSAgent(rounds=20, rollouts=1), MiniMaxAgent(7), 20)
-    # print("150")
-    # simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(), 20)
-    # simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(7), 20)
-    # print("300")
-    # simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(), 20)
-    # simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(7), 20)
+    print("Random")
+    simulate_games(MCTSAgent(), RandomAgent(), 20)
 
-    # simulate_games(MCTSAgent(rounds=3, rollouts=3), MCTSAgent(rounds=100, rollouts=10), 20)
-    # simulate_games(RandomAgent(), RandomAgent(), 10)
-    # simulate_games(RandomAgent(), MiniMaxAgent(), 10)
-    # simulate_games(MiniMaxAgent(), RandomAgent(), 10)
-    # simulate_games(MiniMaxAgent(), MiniMaxAgent(), 10)
+    print("20")
+    simulate_games(MCTSAgent(rounds=20, rollouts=1), MiniMaxAgent(), 20)
+    simulate_games(MCTSAgent(rounds=20, rollouts=1), MiniMaxAgent(7), 20)
+    print("150")
+    simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(), 20)
+    simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(7), 20)
+    print("300")
+    simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(), 20)
+    simulate_games(MCTSAgent(rounds=150, rollouts=1), MiniMaxAgent(7), 20)
+
+    simulate_games(MCTSAgent(rounds=3, rollouts=3), MCTSAgent(rounds=100, rollouts=10), 20)
+    simulate_games(RandomAgent(), RandomAgent(), 10)
+    simulate_games(RandomAgent(), MiniMaxAgent(), 10)
+    simulate_games(MiniMaxAgent(), RandomAgent(), 10)
+    simulate_games(MiniMaxAgent(), MiniMaxAgent(), 10)
 
 
 # Debugging specific games
-
 # if __name__ == "__main__":
 #     game = TicTacToe()
 #     moves = [4, 0, 2, 1, 8, 6]
