@@ -31,7 +31,8 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
   * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=10/n$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx 9/2$)
   * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
 * Tree searches/traversals were based on 2 different heuristic:
-  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent, 
+  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent (also equal to the number of visits to the parent node - 1), $N$ is the number of visits to the node, & $c_{pUCT}$ is a constant balancing exploration of new moves to exploitation of explored moves to maximize utility
+- 
 
 
 ## Training
