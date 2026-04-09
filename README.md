@@ -31,8 +31,10 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
   * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=10/n$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx 9/2$)
   * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
 * Tree searches/traversals were based on 2 different heuristic:
-  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent (also equal to the number of visits to the parent node - 1), $N$ is the number of visits to the node, & $c_{pUCT}$ is a constant balancing exploration of new moves to exploitation of explored moves to maximize utility
-- 
+  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent (also equal to the number of visits to the parent node - 1), $N$ is the number of visits to the node, & $c_{pUCT}$ is a constant balancing exploration of new moves to exploitation of explored moves to maximize utility. This heuristic was used in the Alpha Go Zero implementation
+  * An alternative heuristic tested was $h = \bar{Q} + P * \frac{\sqrt{N_t}}{1 + N} * (c1 + \log{\frac{N_t + c_2 + 1}{c_2}})$. This has 2 main differences from the first heuristic:
+    * $\bar{Q}$ is used instead of $Q$; this is the normalized utility calculated by scaling $Q$ to be between 0 and 1 based on $Q_{max} = 1$ and $Q_{min} = -1$ (the bounding utilities can also be tracked as the extrema throughout the tree)
+    * $c_{pUCT} is replaced with 
 
 
 ## Training
