@@ -6,7 +6,7 @@ This repo contains a recreation of the Alpha Zero reinforcement learning system.
 
 ### RL Environment
 
-Mechanics for tic tac toe and agent play are located in [env.py]. For the tic tac toe game mechanics, each player has a 3x3 matrix storing their occupied positions and a list containing how many squares of the 8 possible winning configurations (3 across, 3 down, 2 diagonal) are filled, allowing for slightly quicker game ending determination. Within the RL environment wrapper, the game is initialized and agents are called in alteration until the game terminates.
+Mechanics for tic tac toe and agent play are located in [env.py](env.py). For the tic tac toe game mechanics, each player has a 3x3 matrix storing their occupied positions and a list containing how many squares of the 8 possible winning configurations (3 across, 3 down, 2 diagonal) are filled, allowing for slightly quicker game ending determination. Within the RL environment wrapper, the game is initialized and agents are called in alteration until the game terminates.
 
 ### Baseline Agents
 
@@ -18,7 +18,7 @@ Prior to the Alpha Zero agent, 3 other agents were developed in [agent.py](agent
 
 ## Alpha Zero Structure
 
-The Alpha Zero system incorporates a neural network with MCTS. This code is located in [az_agent.py].
+The Alpha Zero system incorporates a neural network with MCTS. This code is located in [az_agent.py](az_agent.py).
 
 ### Policy-Value Network
 
@@ -31,7 +31,7 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
   * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=10/n$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx 9/2$)
   * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
 * Tree searches/traversals were based on 2 different heuristic:
-  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$
+  * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent, 
 
 
 ## Training
