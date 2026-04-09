@@ -6,19 +6,33 @@ This repo contains a recreation of the Alpha Zero reinforcement learning system.
 
 ### RL Environment
 
+Mechanics for tic tac toe and agent play are located in [env.py]. For the tic tac toe game mechanics, each player has a 3x3 matrix storing their occupied positions and a list containing how many squares of the 8 possible winning configurations (3 across, 3 down, 2 diagonal) are filled, allowing for slightly quicker game ending determination. Within the RL environment wrapper, the game is initialized and agents are called in alteration until the game terminates.
 
+### Baseline Agents
 
-### Non-AI Agents
-
-In addition to the alpha zero agent, 3 other agents were developed in [agent.py](agent.py):
+Prior to the Alpha Zero agent, 3 other agents were developed in [agent.py](agent.py):
 * **RandomAgent**: Selects random moves
 * **Minimax Agent**: Applies alpha-beta pruning in a minimax tree selection (without a depth limit due to the small size of tic tac toe)
-  * An additional parameter "rmt" (random move threshold) is included; while there are more moves avaliable than rmt, random moves are made. This allows for random first moves and potential exploits earlier in the game for the perfect agent
-* **Monte Carlo Tree Search (MCTS) Agent**: Applies the monte carlo tree search (parameterizing rollouts and simulations) using the upper confidence bound (UCB) heuristic
+  * An additional parameter "rmt" (random move threshold) is included; while there are more moves avaliable than rmt, random moves are made. This allows for random first moves and potential exploits by other agents earlier in the game
+* **Monte Carlo Tree Search (MCTS) Agent**: Applies the monte carlo tree search (with a random-action rollout policy) using the upper confidence bound (UCB) heuristic
 
 ## Alpha Zero Structure
 
-* 
+The Alpha Zero system incorporates a neural network with MCTS. This code is located in [az_agent.py].
+
+### Policy-Value Network
+
+The neural network consists of a residual convolutional network body with 2 heads for policy prediction & value estimation. The unbatched input to the network is a 2x3x3 tensor (2 planes of a binary 3x3 matrix representing board placements for each player; note the player actively playing is in the first plane). The policy output is a tensor of size 9 representing the probabilities of placing in each position on the board. The value output is a size 1 tensor estimating the game outcome from the active position for the player playing (between -1 to 1).
+
+### MCTS
+
+The MCTS algorithm is similar to the baseline MCTS implementation with the following exceptions:
+* When each node is expanded, if the node isn't terminal, the policy-value network is called to estimate the node's value & optimal policy at the node (i.e. no rollouts are ran)
+  * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=10/n$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx 9/2$)
+  * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
+* Tree searches/traversals were based on 2 different heuristic:
+  * The pUCT heuristic $h = Q + $
+
 
 ## Training
 
@@ -34,7 +48,8 @@ In addition to the alpha zero agent, 3 other agents were developed in [agent.py]
 * Implement asynchronous, parallel game playing & model training
   * Store data in a separate replay buffer
   * Augment data (because tic tac toe is rotationally & reflectively symmetric, each position can be rotated 90 degrees & reflected across the x & y axis to generate more positions with equivalent valuations to train the network)
-* Train/Test on a more difficult, unsolved game
+* Train/Test on a more difficult, unsolved game (parameterizing the game played within the RL environment)
+* Implement the MuZero algorithm based on another neural network trained to master game dynamics
 
 # References
 
