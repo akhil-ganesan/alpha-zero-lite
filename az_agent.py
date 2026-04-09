@@ -147,7 +147,7 @@ class AZAgent(Agent):
         def dfs(node: AZAgent.Node):
             if not node.is_leaf() and not node.end:
                 # Heuristic Minimax Selection
-                g = dfs(node.pUCT())
+                g = dfs(node.UCB(c1=1.25/2))
             elif not node.end:
                 leaf = node.expand()
                 g = leaf.v

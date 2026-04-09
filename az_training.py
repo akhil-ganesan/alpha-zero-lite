@@ -1,3 +1,5 @@
+import time
+
 import torch
 import torch.nn.functional as F
 
@@ -14,6 +16,7 @@ def play_game(network, temp=1.0, simulations=100):
     return states.float(), torch.tensor([w * (-1 if i % 2 else 1) for i in range(len(actions))]).float(), actions
 
 if __name__ == "__main__":
+    t1 = time.time()
     config = Config()
     pvnet = PolicyValueNetwork(config)
     # checkpoint = torch.load(f'pvnet_v2_1000.tar')
@@ -54,4 +57,6 @@ if __name__ == "__main__":
                 'loss': mean_loss,
             }, f'pvnet_{i}.tar')
             losses = []
+
+    print(f"Runtime: {time.time() - t1}")
 

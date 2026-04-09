@@ -14,7 +14,7 @@ if __name__ == "__main__":
     agents = []
     for i in [0, 1000, 2000, 3000, 4000]: # range(0, 1001, 200): # 4800, 6800
         pvnet = PolicyValueNetwork(config)
-        checkpoint = torch.load(f'pvnet_v4_{i}.tar')
+        checkpoint = torch.load(f'pvnet_{i}.tar')
         pvnet.load_state_dict(checkpoint['model_state_dict'])
         agents.append(AZAgent(pvnet, 100))
 
