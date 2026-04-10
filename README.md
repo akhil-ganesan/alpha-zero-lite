@@ -37,11 +37,12 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
     * $c_{pUCT}$ is replaced with the expression $c_1 + \log{\frac{N_t + c_2 + 1}{c_2}}$. This essentially represents a $c_{pUCT}$ initially set to $c_1$ that increases throughout the tree search based on $c_2$ (allowing for greater valuing of unexplored states later in the tree search promoting more balanced search)
   * Note the state's utility stored in each node is relative to the player playing; as a result, to adequately reflect utility maximization for the parent node in the heuristics, the values of the children nodes are negated to represent the state value relative to the parent node (the player that played prior); this is possible because the game is a 2-player & 0-sum
 
-
-
 ## Training
 
-* 
+The policy-value network was trained through iterative self-play: a game would be played out between 2 agents with the same policy-value network. The states of each position are stored along with the normalized visit counts to each child of MCTS root node (representing probabilities for each action at that state i.e. the optimal policy) & the final game outcome for the player playing (essentially a vector of 0s for a tie or alternating between -1 and 1 otherwise, with the start value based on if player 1 won). The network is then trained by feeding in the batch of the single game's states, calculating loss between the output values (using mean squared error) & policies (using cross entropy), & backpropogating.
+
+Training was done using an AdamW optimizer with the learning rate set to 0.001 for 4,000 "Epochs" (i.e. games) on a cpu, taking around an hour. Additionally, during training, instead of MCTS returning the most-visited action deterministically, the action returned is sampled by a probability distribution of the final roots childrens' visit counts. Furthermore, this policy is exponentiated and renormalized by $\frac{1}{T}$, where $T$ is the temperature, which is reduces from 1 to 0.25 throughout the training process linearly. Note: the higher the temperature is, the more uniform the distribution is, promoting more exploration earlier in the training process. The temperature logic is implemented within the agent, but the training loop is implemented within [az_training.py](az_training.py).
+
 
 ## Results
 
