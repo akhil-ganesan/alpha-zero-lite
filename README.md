@@ -28,14 +28,14 @@ The neural network consists of a residual convolutional network body with 2 head
 
 The MCTS algorithm is similar to the baseline MCTS implementation with the following exceptions:
 * When each node is expanded, if the node isn't terminal, the policy-value network is called to estimate the node's value & optimal policy at the node (i.e. no rollouts are ran)
-  * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=10/n$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx 9/2$)
+  * Dirichlet noise is added to the output policy to encourage exploration ($\alpha=\frac{10}{n}$, where $n$ is the average number of possible moves in each position, which for tic tac toe can be estimated as $n \approx \frac{9}{2}$)
   * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
 * Tree searches/traversals were based on 2 different heuristic:
   * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent (also equal to the number of visits to the parent node - 1), $N$ is the number of visits to the node, & $c_{pUCT}$ is a constant balancing exploration of new moves to exploitation of explored moves to maximize utility. This heuristic was used in the Alpha Go Zero implementation
   * An alternative heuristic tested was $h = \bar{Q} + P * \frac{\sqrt{N_t}}{1 + N} * (c_1 + \log{\frac{N_t + c_2 + 1}{c_2}})$. This has 2 main differences from the first heuristic:
     * $\bar{Q}$ is used instead of $Q$; this is the normalized utility calculated by scaling $Q$ to be between 0 and 1 based on $Q_{max} = 1$ and $Q_{min} = -1$ (the bounding utilities can also be tracked as the extrema throughout the tree)
     * $c_{pUCT}$ is replaced with the expression $c_1 + \log{\frac{N_t + c_2 + 1}{c_2}}$. This essentially represents a $c_{pUCT}$ initially set to $c_1$ that increases throughout the tree search based on $c_2$ (allowing for greater valuing of unexplored states later in the tree search promoting more balanced search)
-
+  * Note the state's utility stored in each node is relative to the player playing; as a result, to adequately reflect utility maximization for the parent node in the heuristics, the values of the children nodes are negated to represent the state value relative to the parent node (the player that played prior); this is possible because the game is a 2-player & 0-sum
 
 
 
