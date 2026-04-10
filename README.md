@@ -18,7 +18,7 @@ Prior to the Alpha Zero agent, 3 other agents were developed in [agent.py](agent
 
 ## Alpha Zero Structure
 
-The Alpha Zero system incorporates a neural network with MCTS. This code is located in [az_agent.py](az_agent.py).
+The Alpha Zero system incorporates a neural network with MCTS. This code is located in [az_agent.py](az_agent.py). Essentially, the neural network is used to estimate the optimal policy and value of the states in the game (modeled as an markov decision process); MCTS is used to generate data for training the network as a form of policy-value iteration.
 
 ### Policy-Value Network
 
@@ -41,11 +41,12 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
 
 The policy-value network was trained through iterative self-play: a game would be played out between 2 agents with the same policy-value network. The states of each position are stored along with the normalized visit counts to each child of MCTS root node (representing probabilities for each action at that state i.e. the optimal policy) & the final game outcome for the player playing (essentially a vector of 0s for a tie or alternating between -1 and 1 otherwise, with the start value based on if player 1 won). The network is then trained by feeding in the batch of the single game's states, calculating loss between the output values (using mean squared error) & policies (using cross entropy), & backpropogating.
 
-Training was done using an AdamW optimizer with the learning rate set to 0.001 for 4,000 "Epochs" (i.e. games) on a cpu, taking around an hour. Additionally, during training, instead of MCTS returning the most-visited action deterministically, the action returned is sampled by a probability distribution of the final roots childrens' visit counts. Furthermore, this policy is exponentiated and renormalized by $\frac{1}{T}$, where $T$ is the temperature, which is reduces from 1 to 0.25 throughout the training process linearly. Note: the higher the temperature is, the more uniform the distribution is, promoting more exploration earlier in the training process. The temperature logic is implemented within the agent, but the training loop is implemented within [az_training.py](az_training.py).
+Training was done using an AdamW optimizer with the learning rate set to 0.001 for 4,000 "epochs" (i.e. games) on a cpu, taking around an hour. Additionally, during training, instead of MCTS returning the most-visited action deterministically, the action returned is sampled by a probability distribution of the final roots childrens' visit counts. Furthermore, this policy is exponentiated and renormalized by $\frac{1}{T}$, where $T$ is the temperature, which is reduces from 1 to 0.25 throughout the training process linearly. Note: the higher the temperature is, the more uniform the distribution is, promoting more exploration earlier in the training process. The temperature logic is implemented within the agent, but the training loop is implemented within [az_training.py](az_training.py).
 
 
 ## Results
 
+Models were grouped into 5 generations, with each generation separated by 1,000 games of training from self-play. After training, the models were cross-compared by playing games against each other; all models drew against each other when using the UCB heuristic (indicating there was no regression in model performance) and all models after generation 0 tied and beat generation 0 when using the pUCT heuristic (indicating improvement across generations). Each generation was also compared against the 3 baseline models (playing games as first and second player); the results from this generally support the conclusion that training converged after the first generation (where the greatest score improvements came). These results can be seen under the [pUCT Testing](pUCT Testing) & [UCB Testing (c2=0.625)](UCB Testing (c2=0.625)) folders.
 
 
 # Next Steps
