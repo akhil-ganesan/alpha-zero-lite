@@ -32,7 +32,7 @@ The MCTS algorithm is similar to the baseline MCTS implementation with the follo
   * The policy output is masked to exclude illegal moves based on the game dynamics (this is a key distinction between the AlphaZero & MuZero algorithm)
 * Tree searches/traversals were based on 2 different heuristic:
   * The pUCT heuristic $h = Q + c_{pUCT} * P * \frac{\sqrt{N_t}}{1 + N}$, where for a node, $Q$ is the state's utility (updated during MCTS backpropogation), $P$ is the prior probability (i.e. for the node's parent, it's the probability associated with the transition to the specific child state/node from policy output from the policy-value network at the parent node), $N_t$ is the total number of tree visits to each child node of the current node's parent (also equal to the number of visits to the parent node - 1), $N$ is the number of visits to the node, & $c_{pUCT}$ is a constant balancing exploration of new moves to exploitation of explored moves to maximize utility. This heuristic was used in the Alpha Go Zero implementation
-  * An alternative heuristic tested was $h = \bar{Q} + P * \frac{\sqrt{N_t}}{1 + N} * (c_1 + \log{\frac{N_t + c_2 + 1}{c_2}})$. This has 2 main differences from the first heuristic:
+  * An alternative heuristic (based on the Mu Zero implementation) used was $h = \bar{Q} + P * \frac{\sqrt{N_t}}{1 + N} * (c_1 + \log{\frac{N_t + c_2 + 1}{c_2}})$. This has 2 main differences from the first heuristic:
     * $\bar{Q}$ is used instead of $Q$; this is the normalized utility calculated by scaling $Q$ to be between 0 and 1 based on $Q_{max} = 1$ and $Q_{min} = -1$ (the bounding utilities can also be tracked as the extrema throughout the tree)
     * $c_{pUCT}$ is replaced with the expression $c_1 + \log{\frac{N_t + c_2 + 1}{c_2}}$. This essentially represents a $c_{pUCT}$ initially set to $c_1$ that increases throughout the tree search based on $c_2$ (allowing for greater valuing of unexplored states later in the tree search promoting more balanced search)
   * Note the state's utility stored in each node is relative to the player playing; as a result, to adequately reflect utility maximization for the parent node in the heuristics, the values of the children nodes are negated to represent the state value relative to the parent node (the player that played prior); this is possible because the game is a 2-player & 0-sum
@@ -46,17 +46,18 @@ Training was done using an AdamW optimizer with the learning rate set to 0.001 f
 
 ## Results
 
-Models were grouped into 5 generations, with each generation separated by 1,000 games of training from self-play. After training, the models were cross-compared by playing games against each other; all models drew against each other when using the UCB heuristic (indicating there was no regression in model performance) and all models after generation 0 tied and beat generation 0 when using the pUCT heuristic (indicating improvement across generations). Each generation was also compared against the 3 baseline models (playing games as first and second player); the results from this generally support the conclusion that training converged after the first generation (where the greatest score improvements came). These results can be seen under the [UCB Testing (c2=0.625)](https://github.com/akhil-ganesan/alpha-zero-3t/tree/main/UCB%20Testing%20(c2%3D0.625)) & [pUCT Testing](https://github.com/akhil-ganesan/alpha-zero-3t/tree/main/pUCT%20Testing) folders.
+Models were grouped into 5 generations, with each generation separated by 1,000 games of training from self-play. After training, the models were cross-compared by playing games against each other (as seen in [az_testing.py](az_testing.py)); all models drew against each other when using the UCB heuristic (indicating there was no regression in model performance) and all models after generation 0 tied and beat generation 0 when using the pUCT heuristic (indicating improvement across generations). Each generation was also compared against the 3 baseline models (playing games as first and second player); the results from this generally support the conclusion that training converged after the first generation (where the greatest score improvements came). These results can be seen under the [UCB Testing (c2=0.625)](https://github.com/akhil-ganesan/alpha-zero-3t/tree/main/UCB%20Testing%20(c2%3D0.625)) & [pUCT Testing](https://github.com/akhil-ganesan/alpha-zero-3t/tree/main/pUCT%20Testing) folders.
 
 
 # Next Steps
 
 * Add high-performance computing support for training (e.g. CUDA/GPU support, parallelization, etc.)
 * Implement asynchronous, parallel game playing & model training
-  * Store data in a separate replay buffer
+  * Store data in a separate replay buffer to sample from for training
   * Augment data (because tic tac toe is rotationally & reflectively symmetric, each position can be rotated 90 degrees & reflected across the x & y axis to generate more positions with equivalent valuations to train the network)
 * Train/Test on a more difficult, unsolved game (parameterizing the game played within the RL environment)
 * Implement the MuZero algorithm based on another neural network trained to master game dynamics
+
 
 # References
 
