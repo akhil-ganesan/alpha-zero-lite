@@ -1,4 +1,4 @@
-# Alpha Zero
+# Alpha Zero Lite
 
 This repo contains a recreation of the Alpha Zero reinforcement learning system. It was trained and tested on a CPU to play tic tac toe, although the algorithm is interoperable to any game/problem if compute resources are avaliable.
 
